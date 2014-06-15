@@ -1,0 +1,8 @@
+# Compiled stuff
+*.classpath
+*.project
+*.settings/
+
+# binaries
+bin/
+
