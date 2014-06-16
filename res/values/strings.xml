@@ -6,5 +6,16 @@
     <string name="search">Search</string>
     <string name="query_hint">Enter Search Term</string>
     <string name="title_activity_image_display">ImageDisplayActivity</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+    <string name="advanced_search_options">Advanced search options</string>
+    <string name="image_size">Image Size</string>
+    <string name="color_filter">Color Filter</string>
+    <string name="image_type">Image Type</string>
+    <string name="site_filter">Site filter</string>
+    <string name="save">Save</string>
+    <string name="constant_image_size">imageSize</string>
+    <string name="constant_image_type">imageType</string>
+    <string name="constant_color_filter">colorFilter</string>
+    <string name="constant_site_filter">siteFilter</string>
 
 </resources>

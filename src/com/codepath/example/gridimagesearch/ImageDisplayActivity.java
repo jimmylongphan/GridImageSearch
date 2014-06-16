@@ -21,7 +21,5 @@ public class ImageDisplayActivity extends Activity {
 		
 		//ivImage.setImageUrl(url);
 		ivImage.setImageUrl(result.getFullUrl());
-		
-		
 	}
 }

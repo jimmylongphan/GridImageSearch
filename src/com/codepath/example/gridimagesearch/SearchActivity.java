@@ -11,6 +11,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -24,15 +26,25 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 
 public class SearchActivity extends Activity {
 
+    // constants
+    private static final int REQUEST_CODE = 10;
     public static final String MAX_RESULTS_SIZE = "8";
     
+    // Views references
 	EditText etQuery;
 	GridView gvResults;
 	Button btnSearch;
 	ArrayList<ImageResult> imageResults = new ArrayList<ImageResult>();
 	ImageResultArrayAdapter imageAdapter;
 	
+	// client to make network calls
 	AsyncHttpClient client;
+	
+	// saved options
+	String optionImageSize = "";
+	String optionColorFilter = "";
+	String optionImageType = "";
+	String optionSiteFilter = "";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +67,6 @@ public class SearchActivity extends Activity {
                 i.putExtra("result", imageResult );
 
 				startActivity(i);
-				
 			}
 			
 		});
@@ -74,6 +85,13 @@ public class SearchActivity extends Activity {
             }
         });
 	}
+	
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    getMenuInflater().inflate(R.menu.menu, menu);
+	    return true;
+	}
 
 	
 	/**
@@ -89,7 +107,7 @@ public class SearchActivity extends Activity {
         // set our max results
         // Use the offset value and add it as a parameter to the API request to retrieve paginated data.
         String url = "https://ajax.googleapis.com/ajax/services/search/images?rsz=" + MAX_RESULTS_SIZE + "&"
-                + "start=" + offsetStr + "&v=1.0&q=" + Uri.encode(query);
+                + "start=" + offsetStr + generateOptions() + "&v=1.0&q=" + Uri.encode(query);
         
         // Sends out network request
         // sent out the ajax request
@@ -136,13 +154,13 @@ public class SearchActivity extends Activity {
 	}
 	
 	/**
-	 * onClick method from btnSearch
+	 * Handler onClick method from btnSearch
 	 * 
 	 * @param v
 	 */
 	public void onImageSearch(View v) {
 	    String query = etQuery.getText().toString();
-		Toast.makeText(this,  "Searchng for " + query, Toast.LENGTH_SHORT).show();
+		Toast.makeText(this,  "Searching for " + query, Toast.LENGTH_SHORT).show();
 				
 	      // taken from Google developers website
         /*
@@ -152,7 +170,7 @@ public class SearchActivity extends Activity {
         
         // set our max results
         String url = "https://ajax.googleapis.com/ajax/services/search/images?rsz=" + MAX_RESULTS_SIZE + "&"
-                + "start=" + 0 + "&v=1.0&q=" + Uri.encode(query);
+                + "start=" + 0 + generateOptions() + "&v=1.0&q=" + Uri.encode(query);
         
         // sent out the ajax request
         // The handler converts the JSON arrays into an array of ImageResults
@@ -185,4 +203,57 @@ public class SearchActivity extends Activity {
         });
 	}
 	
+	/**
+	 * Settings handler onClick
+	 * Called from clicking ActionBar
+	 * @param mi
+	 */
+	public void onSettings( MenuItem mi ) {
+	    Intent i = new Intent(getApplicationContext(), SettingsActivity.class);
+	    
+	    i.putExtra(this.getString(R.string.constant_image_size) , optionImageSize);
+        i.putExtra(this.getString(R.string.constant_color_filter) , optionColorFilter);
+        i.putExtra(this.getString(R.string.constant_image_type) , optionImageType);
+        i.putExtra(this.getString(R.string.constant_site_filter) , optionSiteFilter);
+        
+	    // invoke settings activity to get user settings
+	    startActivityForResult(i, REQUEST_CODE);
+	}
+	
+	
+	/**
+	 * Getting results from settings
+	 */
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+	    if ( resultCode == RESULT_OK && requestCode == REQUEST_CODE ) {
+	        optionImageSize = data.getStringExtra(this.getString(R.string.constant_image_size));
+	        optionColorFilter = data.getStringExtra(this.getString(R.string.constant_color_filter));
+	        optionImageType = data.getStringExtra(this.getString(R.string.constant_image_type));
+	        optionSiteFilter = data.getStringExtra(this.getString(R.string.constant_site_filter) );
+	    }
+	}
+	
+	/**
+	 * Method to generate the options string based on user settings
+	 * @return
+	 */
+	protected String generateOptions() {
+	    String result = "";
+	    
+	    if ( !optionImageSize.isEmpty() ) {
+	        result += "&imgsz=" + optionImageSize;
+	    }
+	    if ( !optionColorFilter.isEmpty() ) {
+	        result += "&imgcolor=" + optionColorFilter;
+	    }
+	    if ( !optionImageType.isEmpty() ) {
+	        result += "&imgtype=" + optionImageType;
+	    }
+	    if ( !optionSiteFilter.isEmpty() ) {
+	        result += "&as_sitesearch=" + optionSiteFilter;
+	    }
+	    
+	    return result;
+	}
 }
