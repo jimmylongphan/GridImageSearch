@@ -8,6 +8,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+
+/**
+ * Class automatically converts from JSONObject into a ImageResult class
+ * Contains a static method that converts arrays of JSON into ImageResults
+ *
+ */
 public class ImageResult implements Serializable {
 	/**
      * 
